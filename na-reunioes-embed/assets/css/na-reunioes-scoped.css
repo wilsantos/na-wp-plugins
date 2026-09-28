@@ -1,0 +1,567 @@
+/**
+ * Isolamento visual do embed — evita herança do tema WordPress.
+ * Carregar ANTES de na-reunioes.css.
+ */
+
+#na-reunioes-embed {
+	/* Design tokens (espelho de apps/nareunioes/app/globals.css) */
+	--background: oklch(0.98 0 0);
+	--foreground: oklch(0.145 0 0);
+	--card: oklch(1 0 0);
+	--card-foreground: oklch(0.145 0 0);
+	--popover: oklch(1 0 0);
+	--popover-foreground: oklch(0.145 0 0);
+	--primary: oklch(0.40 0.15 248);
+	--primary-foreground: oklch(1 0 0);
+	--secondary: oklch(0.97 0 0);
+	--secondary-foreground: oklch(0.205 0 0);
+	--muted: oklch(0.97 0 0);
+	--muted-foreground: oklch(0.52 0 0);
+	--accent: oklch(0.88 0.18 95);
+	--accent-foreground: oklch(0.25 0 0);
+	--destructive: oklch(0.577 0.245 27.325);
+	--destructive-foreground: oklch(1 0 0);
+	--border: oklch(0.90 0 0);
+	--input: oklch(0.922 0 0);
+	--ring: oklch(0.40 0.15 248);
+	--radius: 0.625rem;
+
+	--na-blue: #03457f;
+	--na-blue-light: #045a9c;
+	--na-yellow: #ffcc00;
+	--na-yellow-light: #ffe066;
+	--na-status-now: #dc2626;
+	--na-status-soon: #f59e0b;
+	--na-status-soon-fg: #422006;
+	--na-status-soon-ink: #b45309;
+	--na-status-later: #64748b;
+
+	/* Tailwind v4 color aliases */
+	--color-background: var(--background);
+	--color-foreground: var(--foreground);
+	--color-card: var(--card);
+	--color-card-foreground: var(--card-foreground);
+	--color-muted: var(--muted);
+	--color-muted-foreground: var(--muted-foreground);
+	--color-border: var(--border);
+	--color-destructive: var(--destructive);
+	--color-destructive-foreground: var(--destructive-foreground);
+	--color-primary: var(--primary);
+	--color-primary-foreground: var(--primary-foreground);
+
+	/* Tipografia base (Geist — mesmo padrão do Next.js) */
+	font-family: "Geist", "Geist Fallback", ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+	font-size: 16px;
+	font-weight: 400;
+	line-height: 1.5;
+	letter-spacing: normal;
+	color: var(--foreground);
+	background-color: var(--background);
+	-webkit-font-smoothing: antialiased;
+	-moz-osx-font-smoothing: grayscale;
+	text-rendering: optimizeLegibility;
+	text-transform: none;
+	font-style: normal;
+	isolation: isolate;
+}
+
+#na-reunioes-embed *,
+#na-reunioes-embed *::before,
+#na-reunioes-embed *::after {
+	box-sizing: border-box;
+}
+
+/* Reset de elementos que temas WP costumam estilizar */
+#na-reunioes-embed :where(h1, h2, h3, h4, h5, h6) {
+	margin: 0;
+	padding: 0;
+	font-family: inherit;
+	font-size: inherit;
+	font-weight: inherit;
+	line-height: inherit;
+	letter-spacing: inherit;
+	color: inherit;
+	text-transform: none;
+	border: 0;
+}
+
+#na-reunioes-embed :where(p) {
+	margin: 0;
+	padding: 0;
+	font-family: inherit;
+	font-size: inherit;
+	font-weight: inherit;
+	line-height: inherit;
+	color: inherit;
+}
+
+#na-reunioes-embed :where(a) {
+	color: inherit;
+	text-decoration: none;
+	background: transparent;
+	box-shadow: none;
+}
+
+#na-reunioes-embed :where(a:hover, a:focus, a:active) {
+	color: inherit;
+	text-decoration: none;
+	outline: none;
+}
+
+#na-reunioes-embed :where(button) {
+	font-family: inherit;
+	font-size: inherit;
+	font-weight: inherit;
+	line-height: inherit;
+	letter-spacing: inherit;
+	text-transform: none;
+	margin: 0;
+	padding: 0;
+	border: 0;
+	background: transparent;
+	color: inherit;
+	cursor: pointer;
+	appearance: none;
+	-webkit-appearance: none;
+	box-shadow: none;
+}
+
+#na-reunioes-embed :where(svg) {
+	display: block;
+	vertical-align: middle;
+	flex-shrink: 0;
+}
+
+/* Tipografia fixa — prioridade sobre o tema WP */
+#na-reunioes-embed .text-xs {
+	font-size: 0.75rem !important;
+	line-height: 1rem !important;
+}
+
+#na-reunioes-embed .text-sm {
+	font-size: 0.875rem !important;
+	line-height: 1.25rem !important;
+}
+
+#na-reunioes-embed .text-base {
+	font-size: 1rem !important;
+	line-height: 1.5rem !important;
+}
+
+#na-reunioes-embed .text-lg {
+	font-size: 1.125rem !important;
+	line-height: 1.75rem !important;
+}
+
+#na-reunioes-embed .text-xl {
+	font-size: 1.25rem !important;
+	line-height: 1.75rem !important;
+}
+
+#na-reunioes-embed .text-2xl {
+	font-size: 1.5rem !important;
+	line-height: 2rem !important;
+}
+
+#na-reunioes-embed .font-normal {
+	font-weight: 400 !important;
+}
+
+#na-reunioes-embed .font-medium {
+	font-weight: 500 !important;
+}
+
+#na-reunioes-embed .font-semibold {
+	font-weight: 600 !important;
+}
+
+#na-reunioes-embed .font-bold {
+	font-weight: 700 !important;
+}
+
+#na-reunioes-embed .leading-tight {
+	line-height: 1.25 !important;
+}
+
+#na-reunioes-embed .uppercase {
+	text-transform: uppercase !important;
+}
+
+#na-reunioes-embed .tracking-wide {
+	letter-spacing: 0.025em !important;
+}
+
+/* Cores semânticas */
+#na-reunioes-embed .text-foreground {
+	color: var(--foreground) !important;
+}
+
+#na-reunioes-embed .text-muted-foreground {
+	color: var(--muted-foreground) !important;
+}
+
+#na-reunioes-embed .text-destructive {
+	color: var(--destructive) !important;
+}
+
+#na-reunioes-embed .text-white {
+	color: #fff !important;
+}
+
+#na-reunioes-embed .bg-background {
+	background-color: var(--background) !important;
+}
+
+#na-reunioes-embed .bg-card {
+	background-color: var(--card) !important;
+}
+
+#na-reunioes-embed .text-card-foreground {
+	color: var(--card-foreground) !important;
+}
+
+#na-reunioes-embed .border-border {
+	border-color: var(--border) !important;
+}
+
+/* Cards NA */
+#na-reunioes-embed .na-meeting-card {
+	display: flex;
+	flex-direction: column;
+	height: 100%;
+	border-color: var(--border) !important;
+	box-shadow: 0 1px 3px rgba(15, 23, 42, 0.08);
+}
+
+#na-reunioes-embed .na-meeting-card__body {
+	display: flex;
+	flex: 1;
+	flex-direction: column;
+	height: 100%;
+	min-height: 100%;
+}
+
+#na-reunioes-embed .na-meeting-card__content {
+	flex: 0 0 auto;
+}
+
+#na-reunioes-embed .na-meeting-card__kind {
+	min-height: 1.5rem;
+}
+
+#na-reunioes-embed .na-meeting-card__footer {
+	display: flex;
+	flex-direction: column;
+	gap: 0.75rem;
+	margin-top: auto;
+	padding-top: 0.75rem;
+}
+
+#na-reunioes-embed .grid.items-stretch {
+	align-items: stretch !important;
+}
+
+#na-reunioes-embed .grid.items-stretch > .na-meeting-card {
+	height: 100%;
+}
+
+#na-reunioes-embed .na-meeting-card__footer .text-2xl {
+	font-size: 1.5rem !important;
+	line-height: 2rem !important;
+	font-weight: 700 !important;
+	color: var(--na-blue) !important;
+}
+
+#na-reunioes-embed .na-card-now {
+	border-left: 4px solid var(--na-blue) !important;
+}
+
+#na-reunioes-embed .na-card-soon {
+	border-left: 4px solid var(--na-status-soon) !important;
+}
+
+#na-reunioes-embed .na-card-later {
+	border-left: 4px solid var(--na-status-later) !important;
+}
+
+#na-reunioes-embed .na-kind-badge svg {
+	display: inline-block;
+	vertical-align: middle;
+}
+
+#na-reunioes-embed .na-section-toggle {
+	display: inline-flex !important;
+	flex-direction: row !important;
+	flex-wrap: nowrap !important;
+	align-items: center !important;
+	gap: 0.5rem !important;
+	width: auto !important;
+	max-width: 100%;
+	font-family: inherit;
+	font-size: inherit;
+	font-weight: inherit;
+	line-height: inherit;
+	letter-spacing: inherit;
+	text-transform: none;
+	margin: 0;
+	padding: 0;
+	border: 0;
+	background: transparent;
+	color: inherit;
+	cursor: pointer;
+	appearance: none;
+	-webkit-appearance: none;
+	box-shadow: none;
+}
+
+#na-reunioes-embed .na-section-toggle > span,
+#na-reunioes-embed .na-section-toggle > h2 {
+	display: inline-flex !important;
+	align-items: center !important;
+	flex: 0 0 auto;
+	margin: 0 !important;
+	padding: 0 !important;
+	width: auto !important;
+}
+
+#na-reunioes-embed .na-section-toggle-icon,
+#na-reunioes-embed .na-section-toggle > span svg {
+	display: block !important;
+	flex-shrink: 0;
+}
+
+#na-reunioes-embed .na-section-toggle:focus-visible {
+	outline: 2px solid var(--na-blue);
+	outline-offset: 2px;
+	border-radius: 0.375rem;
+}
+
+#na-reunioes-embed .na-section-toggle-icon {
+	transition: transform 0.2s ease;
+}
+
+#na-reunioes-embed .na-section-collapsible.is-collapsed .na-section-toggle-icon {
+	transform: rotate(-90deg);
+}
+
+#na-reunioes-embed .na-section-collapsible.is-collapsed .na-section-collapsible__content {
+	display: none !important;
+}
+
+#na-reunioes-embed .na-section-collapsible.is-collapsed > .flex.items-center.justify-between {
+	margin-bottom: 0 !important;
+}
+
+#na-reunioes-embed .na-types-legend__item svg {
+	display: inline-block;
+	vertical-align: middle;
+	flex-shrink: 0;
+}
+
+#na-reunioes-embed .na-types-legend__item strong {
+	font-weight: 700 !important;
+}
+
+#na-reunioes-embed .na-meeting-card h3 {
+	color: var(--na-blue) !important;
+}
+
+#na-reunioes-embed .text-\[var\(--na-status-soon-ink\)\] {
+	color: var(--na-status-soon-ink) !important;
+}
+
+#na-reunioes-embed .na-pulse {
+	animation: na-reunioes-pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+@keyframes na-reunioes-pulse {
+	0%,
+	100% {
+		opacity: 1;
+	}
+	50% {
+		opacity: 0.6;
+	}
+}
+
+/* Responsivo: text-2xl em títulos de seção */
+@media (min-width: 768px) {
+	#na-reunioes-embed .md\:text-2xl {
+		font-size: 1.5rem !important;
+		line-height: 2rem !important;
+	}
+}
+
+/* Badges de formato */
+#na-reunioes-embed .bg-green-100 {
+	background-color: #dcfce7 !important;
+}
+
+#na-reunioes-embed .text-green-700 {
+	color: #15803d !important;
+}
+
+#na-reunioes-embed .border-green-200 {
+	border-color: #bbf7d0 !important;
+}
+
+#na-reunioes-embed .bg-blue-100 {
+	background-color: #dbeafe !important;
+}
+
+#na-reunioes-embed .text-blue-700 {
+	color: #1d4ed8 !important;
+}
+
+#na-reunioes-embed .border-blue-200 {
+	border-color: #bfdbfe !important;
+}
+
+#na-reunioes-embed .bg-slate-100 {
+	background-color: #f1f5f9 !important;
+}
+
+#na-reunioes-embed .text-slate-700 {
+	color: #334155 !important;
+}
+
+#na-reunioes-embed .border-slate-200 {
+	border-color: #e2e8f0 !important;
+}
+
+#na-reunioes-embed .bg-purple-100 {
+	background-color: #f3e8ff !important;
+}
+
+#na-reunioes-embed .text-purple-700 {
+	color: #7e22ce !important;
+}
+
+#na-reunioes-embed .border-purple-200 {
+	border-color: #e9d5ff !important;
+}
+
+#na-reunioes-embed .bg-orange-100 {
+	background-color: #ffedd5 !important;
+}
+
+#na-reunioes-embed .text-orange-700 {
+	color: #c2410c !important;
+}
+
+#na-reunioes-embed .border-orange-200 {
+	border-color: #fed7aa !important;
+}
+
+#na-reunioes-embed .bg-violet-100 {
+	background-color: #ede9fe !important;
+}
+
+#na-reunioes-embed .text-violet-700 {
+	color: #6d28d9 !important;
+}
+
+#na-reunioes-embed .border-violet-200 {
+	border-color: #ddd6fe !important;
+}
+
+/* Botões estilizados — sobrescreve reset de button/a do tema WP */
+#na-reunioes-embed .na-reunioes-refresh {
+	display: inline-flex !important;
+	flex-direction: row !important;
+	align-items: center !important;
+	gap: 0.5rem !important;
+	border: 1px solid var(--na-blue) !important;
+	border-radius: 0.375rem !important;
+	background-color: var(--background) !important;
+	color: var(--na-blue) !important;
+	padding: 0.375rem 0.75rem !important;
+	white-space: nowrap !important;
+}
+
+#na-reunioes-embed .na-reunioes-refresh:hover:not(:disabled) {
+	background-color: var(--muted) !important;
+}
+
+#na-reunioes-embed .na-meeting-card__actions {
+	display: flex !important;
+	flex-direction: row !important;
+	align-items: center !important;
+	gap: 0.5rem !important;
+	width: 100%;
+}
+
+#na-reunioes-embed .na-meeting-card__actions > a {
+	display: inline-flex !important;
+	flex: 1 1 auto !important;
+	align-items: center !important;
+	justify-content: center !important;
+	min-height: 2.25rem;
+}
+
+#na-reunioes-embed .na-reunioes-share {
+	display: inline-flex !important;
+	align-items: center !important;
+	justify-content: center !important;
+	flex: 0 0 auto !important;
+	width: 2.25rem !important;
+	height: 2.25rem !important;
+	min-width: 2.25rem !important;
+	min-height: 2.25rem !important;
+	padding: 0 !important;
+	border: 1px solid var(--border) !important;
+	border-radius: 9999px !important;
+	background-color: var(--background) !important;
+	color: var(--foreground) !important;
+	line-height: 1 !important;
+	vertical-align: middle;
+}
+
+#na-reunioes-embed .na-reunioes-share svg {
+	display: block !important;
+	width: 1rem !important;
+	height: 1rem !important;
+	flex-shrink: 0;
+}
+
+#na-reunioes-embed .na-reunioes-share:hover {
+	background-color: var(--muted) !important;
+}
+
+#na-reunioes-embed .na-card-now a[target="_blank"] {
+	background-color: var(--na-blue) !important;
+	color: #fff !important;
+	border-radius: 0.375rem !important;
+	padding: 0.5rem 1rem !important;
+}
+
+#na-reunioes-embed .na-card-now a[target="_blank"]:hover,
+#na-reunioes-embed .na-card-now a[target="_blank"]:focus {
+	background-color: var(--na-blue-light) !important;
+	color: #fff !important;
+}
+
+#na-reunioes-embed .na-card-soon a[target="_blank"],
+#na-reunioes-embed .na-card-later a[target="_blank"] {
+	border: 1px solid var(--na-blue) !important;
+	color: var(--na-blue) !important;
+	background-color: var(--background) !important;
+	border-radius: 0.375rem !important;
+	padding: 0.5rem 1rem !important;
+}
+
+#na-reunioes-embed .na-card-soon a[target="_blank"]:hover,
+#na-reunioes-embed .na-card-soon a[target="_blank"]:focus,
+#na-reunioes-embed .na-card-later a[target="_blank"]:hover,
+#na-reunioes-embed .na-card-later a[target="_blank"]:focus {
+	background-color: var(--na-blue) !important;
+	color: #fff !important;
+}
+
+/* Toast fora do fluxo do tema */
+#na-reunioes-embed .na-reunioes-toast-container {
+	font-family: inherit;
+	font-size: 0.875rem;
+	line-height: 1.25rem;
+	z-index: 99999;
+}
