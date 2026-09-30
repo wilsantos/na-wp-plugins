@@ -34,14 +34,18 @@ class NA_Reunioes_Renderer {
 	 */
 	public function render_embed( array $data ): string {
 		ob_start();
+		$filters = $data['filters'] ?? array();
 		$this->load_template(
 			'embed-wrapper.php',
 			array(
-				'now'     => $data['now'] ?? array(),
-				'soon'    => $data['soon'] ?? array(),
-				'next24h' => $data['next24h'] ?? array(),
-				'meta'    => $data['meta'] ?? array(),
-				'rest_url' => esc_url( rest_url( 'na-reunioes/v1/reunioes' ) ),
+				'now'           => $data['now'] ?? array(),
+				'soon'          => $data['soon'] ?? array(),
+				'next24h'       => $data['next24h'] ?? array(),
+				'day_meetings'  => $data['day'] ?? array(),
+				'filter_day'    => array_key_exists( 'day', $filters ) ? $filters['day'] : null,
+				'filter_period' => array_key_exists( 'period', $filters ) ? $filters['period'] : null,
+				'meta'          => $data['meta'] ?? array(),
+				'rest_url'      => esc_url( rest_url( 'na-reunioes/v1/reunioes' ) ),
 			)
 		);
 		return (string) ob_get_clean();
@@ -55,13 +59,17 @@ class NA_Reunioes_Renderer {
 	 */
 	public function render_online_view( array $data ): string {
 		ob_start();
+		$filters = $data['filters'] ?? array();
 		$this->load_template(
 			'partials/online-view.php',
 			array(
-				'now'     => $data['now'] ?? array(),
-				'soon'    => $data['soon'] ?? array(),
-				'next24h' => $data['next24h'] ?? array(),
-				'error'   => $data['error'] ?? null,
+				'now'           => $data['now'] ?? array(),
+				'soon'          => $data['soon'] ?? array(),
+				'next24h'       => $data['next24h'] ?? array(),
+				'day_meetings'  => $data['day'] ?? array(),
+				'filter_day'    => array_key_exists( 'day', $filters ) ? $filters['day'] : null,
+				'filter_period' => array_key_exists( 'period', $filters ) ? $filters['period'] : null,
+				'error'         => $data['error'] ?? null,
 			)
 		);
 		return (string) ob_get_clean();

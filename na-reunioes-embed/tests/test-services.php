@@ -39,6 +39,66 @@ assert_true(
 	'bmlt_weekday_to_js_day segunda'
 );
 
+assert_true(
+	0 === NA_Reunioes_Time_Utils::sanitize_weekday( '0' ),
+	'sanitize_weekday domingo'
+);
+
+assert_true(
+	null === NA_Reunioes_Time_Utils::sanitize_weekday( '' ),
+	'sanitize_weekday vazio'
+);
+
+assert_true(
+	null === NA_Reunioes_Time_Utils::sanitize_weekday( '8' ),
+	'sanitize_weekday inválido'
+);
+
+assert_true(
+	'manha' === NA_Reunioes_Time_Utils::sanitize_period( 'manha' ),
+	'sanitize_period manha'
+);
+
+assert_true(
+	null === NA_Reunioes_Time_Utils::sanitize_period( 'almoco' ),
+	'sanitize_period inválido'
+);
+
+$period_cases = array(
+	0  => 'madrugada',
+	6  => 'madrugada',
+	7  => 'manha',
+	11 => 'manha',
+	12 => 'tarde',
+	17 => 'tarde',
+	18 => 'noite',
+	21 => 'noite',
+	22 => 'final-noite',
+	23 => 'final-noite',
+);
+
+foreach ( $period_cases as $hour => $period ) {
+	assert_true(
+		NA_Reunioes_Time_Utils::matches_period( (int) $hour, $period ),
+		"hora $hour pertence a $period"
+	);
+}
+
+assert_true(
+	! NA_Reunioes_Time_Utils::matches_period( 6, 'manha' ),
+	'6h não é manhã'
+);
+
+assert_true(
+	! NA_Reunioes_Time_Utils::matches_period( 7, 'madrugada' ),
+	'7h não é madrugada'
+);
+
+assert_true(
+	NA_Reunioes_Time_Utils::matches_period( 15, null ),
+	'período vazio não filtra'
+);
+
 // format_time_remaining
 assert_true(
 	'45 min' === NA_Reunioes_Time_Utils::format_time_remaining( 45 ),

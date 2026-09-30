@@ -7,20 +7,14 @@
  * @var string                           $section_id
  * @var string                           $section_title
  * @var int                              $section_count
- * @var string                           $section_variant now|soon|later
+ * @var string                           $section_variant now|soon|later|day
  * @var string                           $section_badge
- * @var bool                             $show_refresh Optional. Exibe botão Atualizar ao lado do badge.
+ * @var bool                             $section_open Optional. Abre a seção recolhível.
+ * @var bool                             $show_total   Optional. Exibe o total na linha do título.
  * @var array<int, array<string, mixed>> $meetings
  */
 
 defined( 'ABSPATH' ) || exit;
-
-$badge_colors = array(
-	'now'   => 'bg-[var(--na-blue)] text-white',
-	'soon'  => 'bg-[var(--na-status-soon)] text-[var(--na-status-soon-fg)]',
-	'later' => 'bg-muted text-muted-foreground',
-);
-$badge_class = $badge_colors[ $section_variant ] ?? $badge_colors['later'];
 
 $icon_svg = '';
 if ( 'now' === $section_variant ) {
@@ -30,19 +24,23 @@ if ( 'now' === $section_variant ) {
 } else {
 	$icon_svg = '<svg class="h-6 w-6" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect width="18" height="18" x="3" y="4" rx="2" ry="2"/><line x1="16" x2="16" y1="2" y2="6"/><line x1="8" x2="8" y1="2" y2="6"/><line x1="3" x2="21" y1="10" y2="10"/></svg>';
 }
-$is_collapsible = ( 'later' === $section_variant );
+$is_collapsible  = ( 'later' === $section_variant );
+$start_collapsed = $is_collapsible && empty( $section_open );
 $section_classes = 'py-6 md:py-8';
 if ( $is_collapsible ) {
-	$section_classes .= ' na-section-collapsible is-collapsed';
+	$section_classes .= ' na-section-collapsible';
+	if ( $start_collapsed ) {
+		$section_classes .= ' is-collapsed';
+	}
 }
 ?>
 <section id="<?php echo esc_attr( $section_id ); ?>" class="<?php echo esc_attr( $section_classes ); ?>">
-	<div class="flex items-center justify-between mb-4 md:mb-6">
+	<div class="na-section-heading flex items-center justify-between mb-4 md:mb-6">
 		<?php if ( $is_collapsible ) : ?>
 			<button
 				type="button"
 				class="na-section-toggle flex items-center gap-2 text-left"
-				aria-expanded="false"
+				aria-expanded="<?php echo $start_collapsed ? 'false' : 'true'; ?>"
 				aria-controls="<?php echo esc_attr( $section_id . '-content' ); ?>"
 			>
 				<svg class="na-section-toggle-icon h-5 w-5 shrink-0 text-[var(--na-blue)]" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg>
@@ -55,22 +53,16 @@ if ( $is_collapsible ) {
 				<h2 class="text-xl md:text-2xl font-bold text-foreground"><?php echo esc_html( $section_title ); ?></h2>
 			</div>
 		<?php endif; ?>
-		<div class="flex items-center gap-2">
-			<?php if ( ! empty( $show_refresh ) ) : ?>
-				<?php include NA_REUNIOES_EMBED_PATH . 'templates/partials/refresh-button.php'; ?>
-			<?php endif; ?>
-			<span class="rounded-full px-3 py-1 text-sm font-medium <?php echo esc_attr( $badge_class ); ?>">
-				<?php echo esc_html( (string) $section_count . ' ' . $section_badge ); ?>
+		<?php if ( ! empty( $show_total ) ) : ?>
+			<span class="na-reunioes-count">
+				<?php echo esc_html( (string) $visible_count . ' ' . $count_label ); ?>
 			</span>
-		</div>
+		<?php endif; ?>
 	</div>
-	<?php if ( 'now' === $section_variant ) : ?>
-		<?php echo NA_Reunioes_Format_Badges::render_types_legend(); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
-	<?php endif; ?>
 	<div
 		id="<?php echo esc_attr( $section_id . '-content' ); ?>"
 		class="<?php echo esc_attr( $is_collapsible ? 'na-section-collapsible__content' : '' ); ?> grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 items-stretch"
-		<?php echo $is_collapsible ? 'hidden' : ''; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
+		<?php echo $start_collapsed ? 'hidden' : ''; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
 	>
 		<?php foreach ( $meetings as $meeting ) : ?>
 			<?php

@@ -20,7 +20,7 @@ class NA_Reunioes_Normalize_Meeting {
 	 * @param array<int, array<string, mixed>> $meetings Reuniões brutas.
 	 * @return array<int, array<string, mixed>>
 	 */
-	public static function normalize_meetings( array $meetings ): array {
+	public static function normalize_meetings( array $meetings, bool $only_within_24h = true ): array {
 		$normalized = array();
 		$seen_ids   = array();
 
@@ -30,9 +30,9 @@ class NA_Reunioes_Normalize_Meeting {
 				continue;
 			}
 
-			$result = self::normalize_meeting( $meeting );
+			$result = self::normalize_meeting( $meeting, $only_within_24h );
 			if ( null !== $result ) {
-				$normalized[]   = $result;
+				$normalized[]    = $result;
 				$seen_ids[ $id ] = true;
 			}
 		}
@@ -43,10 +43,11 @@ class NA_Reunioes_Normalize_Meeting {
 	/**
 	 * Normaliza uma reunião BMLT.
 	 *
-	 * @param array<string, mixed> $meeting Dados brutos.
+	 * @param array<string, mixed> $meeting         Dados brutos.
+	 * @param bool                 $only_within_24h Quando true, descarta reuniões fora das próximas 24h.
 	 * @return array<string, mixed>|null
 	 */
-	public static function normalize_meeting( array $meeting ): ?array {
+	public static function normalize_meeting( array $meeting, bool $only_within_24h = true ): ?array {
 		$venue_type = (string) ( $meeting['venue_type'] ?? '' );
 		$is_online  = '2' === $venue_type;
 		$is_hybrid  = '3' === $venue_type;
@@ -65,13 +66,16 @@ class NA_Reunioes_Normalize_Meeting {
 			return null;
 		}
 
+		$start_raw  = (string) ( $meeting['start_time'] ?? '00:00:00' );
+		$start_hour = (int) explode( ':', $start_raw )[0];
+
 		$occurrence = NA_Reunioes_Time_Utils::get_next_occurrence(
 			$weekday,
-			(string) ( $meeting['start_time'] ?? '00:00:00' ),
+			$start_raw,
 			(string) ( $meeting['duration_time'] ?? '' )
 		);
 
-		if ( ! NA_Reunioes_Time_Utils::is_within_24_hours( $occurrence['starts_at'] ) ) {
+		if ( $only_within_24h && ! NA_Reunioes_Time_Utils::is_within_24_hours( $occurrence['starts_at'] ) ) {
 			return null;
 		}
 
@@ -91,6 +95,8 @@ class NA_Reunioes_Normalize_Meeting {
 			'start_time'          => NA_Reunioes_Time_Utils::format_time( $occurrence['starts_at'] ),
 			'end_time'            => NA_Reunioes_Time_Utils::format_time( $occurrence['ends_at'] ),
 			'day_name'            => $occurrence['day_name'],
+			'weekday'             => NA_Reunioes_Time_Utils::bmlt_weekday_to_js_day( $weekday ),
+			'start_hour'          => $start_hour,
 			'minutes_until_start' => NA_Reunioes_Time_Utils::get_minutes_until_start( $occurrence['starts_at'] ),
 			'status'              => $status,
 			'type'                => 'online',

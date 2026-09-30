@@ -13,7 +13,7 @@
 
 defined( 'ABSPATH' ) || exit;
 
-define( 'NA_REUNIOES_EMBED_VERSION', '1.0.0' );
+define( 'NA_REUNIOES_EMBED_VERSION', '1.0.6' );
 define( 'NA_REUNIOES_EMBED_FILE', __FILE__ );
 define( 'NA_REUNIOES_EMBED_PATH', plugin_dir_path( __FILE__ ) );
 define( 'NA_REUNIOES_EMBED_URL', plugin_dir_url( __FILE__ ) );

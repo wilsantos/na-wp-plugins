@@ -113,19 +113,74 @@
     });
   }
 
+  function filterQuery(embed) {
+    var params = ['type=online', 'format=html'];
+    var day = qs('.na-reunioes-filter-day', embed);
+    var period = qs('.na-reunioes-filter-period', embed);
+    if (day && day.value !== '') {
+      params.push('day=' + encodeURIComponent(day.value));
+    }
+    if (period && period.value !== '') {
+      params.push('period=' + encodeURIComponent(period.value));
+    }
+    return params.join('&');
+  }
+
+  function unwrapHtml(text) {
+    var trimmed = String(text || '').replace(/^\uFEFF/, '').trim();
+    if (trimmed.charAt(0) !== '"') return text;
+    try {
+      var parsed = JSON.parse(trimmed);
+      if (typeof parsed === 'string') return parsed;
+    } catch (e) {
+      return text;
+    }
+    return text;
+  }
+
+  function bindToolbar(root, embed, toastContainer) {
+    qsa('.na-reunioes-refresh', root).forEach(function (btn) {
+      if (btn.getAttribute('data-bound') === '1') return;
+      btn.setAttribute('data-bound', '1');
+      btn.addEventListener('click', function () {
+        refreshMeetings(embed, toastContainer);
+      });
+    });
+
+    qsa('.na-reunioes-filters select', root).forEach(function (el) {
+      if (el.getAttribute('data-bound') === '1') return;
+      el.setAttribute('data-bound', '1');
+      el.addEventListener('change', function () {
+        refreshMeetings(embed, toastContainer);
+      });
+    });
+  }
+
+  function setFiltersDisabled(embed, disabled) {
+    qsa('.na-reunioes-filters select', embed).forEach(function (el) {
+      el.disabled = disabled;
+    });
+  }
+
   async function refreshMeetings(embed, toastContainer) {
     var restUrl = embed.getAttribute('data-rest-url');
     if (!restUrl) return;
 
+    var requestId = (embed._naReqId || 0) + 1;
+    embed._naReqId = requestId;
+
     var refreshBtn = qs('.na-reunioes-refresh', embed);
     var refreshIcon = qs('.na-reunioes-refresh-icon', embed);
     var main = qs('.na-reunioes-main', embed);
+    var query = filterQuery(embed);
 
     if (refreshBtn) refreshBtn.disabled = true;
     if (refreshIcon) refreshIcon.classList.add('animate-spin');
+    setFiltersDisabled(embed, true);
+    if (main) main.classList.add('is-loading');
 
     try {
-      var url = restUrl + (restUrl.indexOf('?') >= 0 ? '&' : '?') + 'type=online&format=html';
+      var url = restUrl + (restUrl.indexOf('?') >= 0 ? '&' : '?') + query;
       var response = await fetch(url, {
         headers: {
           Accept: 'text/html',
@@ -134,25 +189,29 @@
         credentials: 'same-origin',
       });
 
+      if (embed._naReqId !== requestId) return;
+
       if (!response.ok) {
         throw new Error('HTTP ' + response.status);
       }
 
-      var html = await response.text();
+      var html = unwrapHtml(await response.text());
+      if (embed._naReqId !== requestId) return;
+
       if (main) {
         main.innerHTML = html;
         bindActions(main, toastContainer);
         bindSectionToggles(main);
-        var newRefreshBtn = qs('.na-reunioes-refresh', main);
-        if (newRefreshBtn) {
-          newRefreshBtn.addEventListener('click', function () {
-            refreshMeetings(embed, toastContainer);
-          });
-        }
+        bindToolbar(main, embed, toastContainer);
       }
     } catch (err) {
-      showToast(toastContainer, 'Erro ao atualizar reuniões', 'error');
+      if (embed._naReqId === requestId) {
+        showToast(toastContainer, 'Erro ao atualizar reuniões', 'error');
+      }
     } finally {
+      if (embed._naReqId !== requestId) return;
+      setFiltersDisabled(embed, false);
+      if (main) main.classList.remove('is-loading');
       var activeBtn = qs('.na-reunioes-refresh', embed);
       var activeIcon = qs('.na-reunioes-refresh-icon', embed);
       if (activeBtn) activeBtn.disabled = false;
@@ -165,12 +224,7 @@
     bindActions(embed, toastContainer);
     bindSectionToggles(embed);
 
-    var refreshBtn = qs('.na-reunioes-refresh', embed);
-    if (refreshBtn) {
-      refreshBtn.addEventListener('click', function () {
-        refreshMeetings(embed, toastContainer);
-      });
-    }
+    bindToolbar(embed, embed, toastContainer);
 
     setInterval(function () {
       refreshMeetings(embed, toastContainer);

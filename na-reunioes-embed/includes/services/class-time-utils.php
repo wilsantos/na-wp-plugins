@@ -105,6 +105,147 @@ class NA_Reunioes_Time_Utils {
 	}
 
 	/**
+	 * Dias da semana para o filtro (0=domingo … 6=sábado).
+	 *
+	 * @return array<int, array{label:string,phrase:string}>
+	 */
+	public static function get_weekdays(): array {
+		return array(
+			0 => array(
+				'label'  => 'Domingo',
+				'phrase' => 'no domingo',
+			),
+			1 => array(
+				'label'  => 'Segunda-feira',
+				'phrase' => 'na segunda-feira',
+			),
+			2 => array(
+				'label'  => 'Terça-feira',
+				'phrase' => 'na terça-feira',
+			),
+			3 => array(
+				'label'  => 'Quarta-feira',
+				'phrase' => 'na quarta-feira',
+			),
+			4 => array(
+				'label'  => 'Quinta-feira',
+				'phrase' => 'na quinta-feira',
+			),
+			5 => array(
+				'label'  => 'Sexta-feira',
+				'phrase' => 'na sexta-feira',
+			),
+			6 => array(
+				'label'  => 'Sábado',
+				'phrase' => 'no sábado',
+			),
+		);
+	}
+
+	/**
+	 * Períodos do dia, com hora inicial inclusiva.
+	 *
+	 * 0–6 Madrugada, 7–11 Manhã, 12–17 Tarde, 18–21 Noite, 22–23 Final de Noite.
+	 *
+	 * @return array<string, array{label:string,from:int,to:int,phrase:string}>
+	 */
+	public static function get_periods(): array {
+		return array(
+			'madrugada'   => array(
+				'label'  => 'Madrugada',
+				'from'   => 0,
+				'to'     => 6,
+				'phrase' => 'na madrugada',
+			),
+			'manha'       => array(
+				'label'  => 'Manhã',
+				'from'   => 7,
+				'to'     => 11,
+				'phrase' => 'de manhã',
+			),
+			'tarde'       => array(
+				'label'  => 'Tarde',
+				'from'   => 12,
+				'to'     => 17,
+				'phrase' => 'à tarde',
+			),
+			'noite'       => array(
+				'label'  => 'Noite',
+				'from'   => 18,
+				'to'     => 21,
+				'phrase' => 'à noite',
+			),
+			'final-noite' => array(
+				'label'  => 'Final de Noite',
+				'from'   => 22,
+				'to'     => 23,
+				'phrase' => 'no final da noite',
+			),
+		);
+	}
+
+	/**
+	 * Normaliza o dia vindo da consulta (0–6). Vazio ou inválido vira null.
+	 *
+	 * @param mixed $value Valor bruto.
+	 * @return int|null
+	 */
+	public static function sanitize_weekday( $value ): ?int {
+		if ( null === $value || false === $value || '' === $value ) {
+			return null;
+		}
+
+		if ( is_int( $value ) ) {
+			return ( $value >= 0 && $value <= 6 ) ? $value : null;
+		}
+
+		if ( is_string( $value ) && preg_match( '/^[0-6]$/', trim( $value ) ) ) {
+			return (int) trim( $value );
+		}
+
+		return null;
+	}
+
+	/**
+	 * Normaliza o período vindo da consulta. Vazio ou inválido vira null.
+	 *
+	 * @param mixed $value Valor bruto.
+	 * @return string|null
+	 */
+	public static function sanitize_period( $value ): ?string {
+		if ( ! is_string( $value ) ) {
+			return null;
+		}
+
+		$key = strtolower( trim( $value ) );
+		if ( '' === $key ) {
+			return null;
+		}
+
+		return array_key_exists( $key, self::get_periods() ) ? $key : null;
+	}
+
+	/**
+	 * Indica se a hora de início cai no período informado.
+	 *
+	 * @param int         $hour   Hora 0–23.
+	 * @param string|null $period Chave do período, ou null para não filtrar.
+	 * @return bool
+	 */
+	public static function matches_period( int $hour, ?string $period ): bool {
+		if ( null === $period || '' === $period ) {
+			return true;
+		}
+
+		$periods = self::get_periods();
+		if ( ! isset( $periods[ $period ] ) ) {
+			return false;
+		}
+
+		return $hour >= $periods[ $period ]['from'] && $hour <= $periods[ $period ]['to'];
+	}
+
+	/**
 	 * Calcula a próxima ocorrência de uma reunião.
 	 *
 	 * @param int    $weekday_tinyint Dia BMLT 1-7.
