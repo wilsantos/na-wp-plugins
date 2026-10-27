@@ -12,8 +12,6 @@ defined( 'ABSPATH' ) || exit;
  */
 class NA_Reunioes_Normalize_Meeting {
 
-	private const ZOOM_PASSWORD_PADRAO = '000000';
-
 	/**
 	 * Normaliza lista de reuniões BMLT (apenas online).
 	 *
@@ -228,9 +226,14 @@ class NA_Reunioes_Normalize_Meeting {
 			$zoom_id = self::normalize_zoom_id( $m[1] );
 		}
 
+		$zoom_pass = null;
+		if ( preg_match( '/\b(?:senha|password|passcode|pwd)\b\s*[:#-]?\s*([^\s|,;()]+)/iu', $info_text, $m ) ) {
+			$zoom_pass = $m[1];
+		}
+
 		return array(
 			'zoom_id'   => $zoom_id,
-			'zoom_pass' => self::ZOOM_PASSWORD_PADRAO,
+			'zoom_pass' => $zoom_pass,
 		);
 	}
 
